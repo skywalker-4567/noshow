@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Risk Accuracy Report')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-2">Weekly Risk Accuracy Report</h3>
+    <p class="text-muted mb-4">Showing counts for the past 7 days.</p>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-danger">
+                <div class="card-body">
+                    <h6 class="text-muted">Predicted HIGH</h6>
+                    <h2 class="text-danger" th:text="${predictedHigh}">0</h2>
+                    <small class="text-muted">Appointments scored HIGH risk</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h6 class="text-muted">Actual No-Shows</h6>
+                    <h2 class="text-warning" th:text="${actualNoShow}">0</h2>
+                    <small class="text-muted">Appointments that became NO_SHOW</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h6 class="text-muted">True Positives</h6>
+                    <h2 class="text-success" th:text="${truePositives}">0</h2>
+                    <small class="text-muted">HIGH predictions that no-showed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h6 class="text-muted">Precision</h6>
+                    <h2 class="text-info" th:text="${precision}">0.0%</h2>
+                    <small class="text-muted">True positives ÷ predicted HIGH</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>How to read this:</strong>
+        A precision of 30–40% is expected — the model is tuned for recall
+        (<code>class_weight='balanced'</code>) to catch most genuine no-shows,
+        accepting some false positives. A missed no-show costs more than an unnecessary reminder call.
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Appointments')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-4">Appointments</h3>
+
+    <form th:action="@{/admin/appointments}" method="get" class="d-flex mb-3" style="max-width: 300px;">
+        <select name="status" class="form-select me-2" onchange="this.form.submit()">
+            <option th:each="s : ${T(com.hospital.noshow.enums.AppointmentStatus).values()}"
+                    th:value="${s}" th:text="${s}"
+                    th:selected="${s.name() == currentStatus}"></option>
+        </select>
+    </form>
+
+    <table class="table table-bordered table-sm bg-white">
+        <thead class="table-light">
+        <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Risk</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="appt : ${appointments.content}">
+            <td th:text="${appt.patient.name}"></td>
+            <td th:text="${appt.doctor.name}"></td>
+            <td th:text="${appt.scheduledDate}"></td>
+            <td th:text="${appt.scheduledTime}"></td>
+            <td th:text="${appt.status}"></td>
+            <td>
+                <span th:if="${riskByAppointmentId.containsKey(appt.id)}"
+                      th:text="${riskByAppointmentId.get(appt.id).riskLevel}"
+                      th:classappend="${riskByAppointmentId.get(appt.id).riskLevel.name() == 'HIGH'} ? 'badge bg-danger'
+                                     : (${riskByAppointmentId.get(appt.id).riskLevel.name() == 'MEDIUM'} ? 'badge bg-warning text-dark' : 'badge bg-success')">
+                </span>
+                <span th:unless="${riskByAppointmentId.containsKey(appt.id)}" class="text-muted small">Not scored</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
+                <a class="page-link" th:href="@{/admin/appointments(page=${currentPage - 1}, status=${currentStatus})}">Previous</a>
+            </li>
+            <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:class="${i == currentPage} ? 'page-item active' : 'page-item'">
+                <a class="page-link" th:href="@{/admin/appointments(page=${i}, status=${currentStatus})}" th:text="${i + 1}"></a>
+            </li>
+            <li th:class="${currentPage == totalPages - 1} ? 'page-item disabled' : 'page-item'">
+                <a class="page-link" th:href="@{/admin/appointments(page=${currentPage + 1}, status=${currentStatus})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+</body>
+</html>

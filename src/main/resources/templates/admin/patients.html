@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Patients')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-4">Patients</h3>
+
+    <div th:if="${param.added}" class="alert alert-success">Patient added successfully.</div>
+    <div th:if="${param.updated}" class="alert alert-success">Patient updated successfully.</div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <form th:action="@{/admin/patients}" method="get" class="d-flex mb-3">
+                <input type="text" name="search" class="form-control me-2"
+                       placeholder="Search by name" th:value="${search}">
+                <button type="submit" class="btn btn-outline-secondary">Search</button>
+            </form>
+
+            <table class="table table-bordered table-sm bg-white">
+                <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Risk Factors</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${patients}">
+                    <td th:text="${p.name}"></td>
+                    <td th:text="${p.age}"></td>
+                    <td th:text="${p.gender}"></td>
+                    <td>
+                        <span th:if="${p.hypertension}" class="badge bg-warning text-dark me-1">HTN</span>
+                        <span th:if="${p.diabetes}" class="badge bg-warning text-dark me-1">Diabetes</span>
+                        <span th:if="${p.alcoholism}" class="badge bg-warning text-dark me-1">Alcoholism</span>
+                        <span th:if="${p.scholarship}" class="badge bg-info text-dark me-1">Scholarship</span>
+                        <span th:if="${p.smsReceived}" class="badge bg-secondary">SMS Confirmed</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/patients/{id}/edit(id=${p.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${formMode == 'edit'} ? 'Edit Patient' : 'Add Patient'">Add Patient</h5>
+
+                    <form th:action="${formMode == 'edit'} ? @{/admin/patients/{id}/edit(id=${editId})} : @{/admin/patients/add}"
+                          th:object="${patientDTO}" method="post">
+
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" th:field="*{name}">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-control" th:field="*{age}">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" th:field="*{gender}">
+                                <option value="M">M</option>
+                                <option value="F">F</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" th:field="*{phone}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" th:field="*{email}">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" th:field="*{scholarship}"><label class="form-check-label">Scholarship</label></div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" th:field="*{hypertension}"><label class="form-check-label">Hypertension</label></div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" th:field="*{diabetes}"><label class="form-check-label">Diabetes</label></div>
+                        <div class="form-check"><input type="checkbox" class="form-check-input" th:field="*{alcoholism}"><label class="form-check-label">Alcoholism</label></div>
+                        <div class="form-check mb-3"><input type="checkbox" class="form-check-input" th:field="*{smsReceived}"><label class="form-check-label">SMS Received</label></div>
+
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

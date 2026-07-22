@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Admin Dashboard')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-4">Admin Dashboard</h3>
+
+    <div th:if="${param.scoringRun}" class="alert alert-success">Nightly batch scoring run complete.</div>
+    <div th:if="${param.alertsRun}" class="alert alert-success">Morning risk alerts sent.</div>
+    <div th:if="${param.reportRun}" class="alert alert-success">Weekly accuracy report sent.</div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Appointments</h6>
+                    <h3 th:text="${stats.totalAppointments}">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Today's Appointments</h6>
+                    <h3 th:text="${stats.todayAppointmentCount}">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">HIGH Risk Count</h6>
+                    <h3 class="text-danger" th:text="${stats.highRiskCount}">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Patients</h6>
+                    <h3 th:text="${stats.totalPatients}">0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Appointments by Status</h6>
+                    <canvas id="statusChart"
+                            th:attr="data-labels=${#strings.listJoin(stats.statusLabels, ',')},
+                                     data-values=${#strings.listJoin(stats.statusValues, ',')}">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Risk Level Distribution</h6>
+                    <canvas id="riskChart"
+                            th:attr="data-labels=${#strings.listJoin(stats.riskLabels, ',')},
+                                     data-values=${#strings.listJoin(stats.riskValues, ',')}">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h6 class="card-title">Automation — Run Now (Demo Triggers)</h6>
+            <form th:action="@{/admin/scheduler/run-scoring}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-primary me-2">Run Nightly Scoring</button>
+            </form>
+            <form th:action="@{/admin/scheduler/run-morning-alerts}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-warning me-2">Run Morning Alerts</button>
+            </form>
+            <form th:action="@{/admin/scheduler/run-weekly-report}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-secondary">Run Weekly Report</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function readChartData(canvasId) {
+        const el = document.getElementById(canvasId);
+        return {
+            labels: el.getAttribute('data-labels').split(','),
+            values: el.getAttribute('data-values').split(',').map(Number)
+        };
+    }
+    const statusData = readChartData('statusChart');
+    new Chart(document.getElementById('statusChart'), {
+        type: 'bar',
+        data: {
+            labels: statusData.labels,
+            datasets: [{ label: 'Appointments', data: statusData.values, backgroundColor: '#0d6efd' }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+    const riskData = readChartData('riskChart');
+    new Chart(document.getElementById('riskChart'), {
+        type: 'doughnut',
+        data: {
+            labels: riskData.labels,
+            datasets: [{
+                data: riskData.values,
+                backgroundColor: ['#198754', '#ffc107', '#dc3545']
+            }]
+        },
+        options: { responsive: true }
+    });
+</script>
+
+</body>
+</html>

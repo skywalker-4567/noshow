@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Book Appointment')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+  <h3 class="mb-4">Book Appointment</h3>
+
+  <div class="card" style="max-width: 600px;">
+    <div class="card-body">
+      <form th:action="@{/receptionist/appointments/new}" th:object="${appointmentDTO}" method="post">
+
+        <div class="mb-3">
+          <label class="form-label">Patient</label>
+          <select class="form-select" th:field="*{patientId}">
+            <option value="">-- Select Patient --</option>
+            <option th:each="p : ${patients}" th:value="${p.id}" th:text="${p.name}"></option>
+          </select>
+          <div class="text-danger small" th:if="${#fields.hasErrors('patientId')}" th:errors="*{patientId}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Doctor</label>
+          <select class="form-select" th:field="*{doctorId}">
+            <option value="">-- Select Doctor --</option>
+            <option th:each="d : ${doctors}" th:value="${d.id}" th:text="${d.name + ' (' + d.specialization + ')'}"></option>
+          </select>
+          <div class="text-danger small" th:if="${#fields.hasErrors('doctorId')}" th:errors="*{doctorId}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-control" th:field="*{scheduledDate}">
+          <div class="text-danger small" th:if="${#fields.hasErrors('scheduledDate')}" th:errors="*{scheduledDate}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Time</label>
+          <input type="time" class="form-control" th:field="*{scheduledTime}">
+          <div class="text-danger small" th:if="${#fields.hasErrors('scheduledTime')}" th:errors="*{scheduledTime}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" th:field="*{notes}" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

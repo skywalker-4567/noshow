@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Appointments')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-3">All Appointments</h3>
+
+    <div th:if="${param.booked}"    class="alert alert-success">Appointment booked successfully.</div>
+    <div th:if="${param.confirmed}" class="alert alert-success">Appointment confirmed.</div>
+    <div th:if="${param.cancelled}" class="alert alert-warning">Appointment cancelled.</div>
+    <div th:if="${param.noshow}"    class="alert alert-danger">Marked as no-show.</div>
+    <div th:if="${param.completed}" class="alert alert-success">Marked as completed.</div>
+
+    <a href="/receptionist/appointments/new" class="btn btn-primary mb-3">Book New Appointment</a>
+
+    <table class="table table-bordered table-sm bg-white">
+        <thead class="table-light">
+        <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="appt : ${appointments}">
+            <td th:text="${appt.patient.name}"></td>
+            <td th:text="${appt.doctor.name}"></td>
+            <td th:text="${appt.scheduledDate}"></td>
+            <td th:text="${appt.scheduledTime}"></td>
+            <td th:text="${appt.status}"></td>
+            <td>
+                <form th:if="${appt.status.name() == 'SCHEDULED'}"
+                      th:action="@{/receptionist/appointments/{id}/confirm(id=${appt.id})}"
+                      method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                </form>
+                <form th:if="${appt.status.name() == 'SCHEDULED' or appt.status.name() == 'CONFIRMED'}"
+                      th:action="@{/receptionist/appointments/{id}/no-show(id=${appt.id})}"
+                      method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-warning">No-Show</button>
+                </form>
+                <form th:if="${appt.status.name() == 'CONFIRMED'}"
+                      th:action="@{/receptionist/appointments/{id}/complete(id=${appt.id})}"
+                      method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-primary">Complete</button>
+                </form>
+                <form th:if="${appt.status.name() == 'SCHEDULED' or appt.status.name() == 'CONFIRMED'}"
+                      th:action="@{/receptionist/appointments/{id}/cancel(id=${appt.id})}"
+                      method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(appointments)}">
+            <td colspan="6" class="text-center text-muted">No appointments found.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

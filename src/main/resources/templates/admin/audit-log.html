@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Audit Log')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-4">Audit Log</h3>
+
+    <table class="table table-bordered table-sm bg-white">
+        <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Entity Type</th>
+            <th>Entity ID</th>
+            <th>Old Status</th>
+            <th>New Status</th>
+            <th>Changed By</th>
+            <th>Changed At</th>
+            <th>Remarks</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="log : ${logs}">
+            <td th:text="${log.id}"></td>
+            <td th:text="${log.entityType}"></td>
+            <td th:text="${log.entityId}"></td>
+            <td>
+                <span th:if="${log.oldStatus != null}" th:text="${log.oldStatus}" class="badge bg-secondary"></span>
+                <span th:unless="${log.oldStatus != null}" class="text-muted small">—</span>
+            </td>
+            <td>
+                <span th:text="${log.newStatus}"
+                      th:classappend="${log.newStatus == 'SCHEDULED'}    ? 'badge bg-primary'          :
+                                      (${log.newStatus == 'CONFIRMED'}   ? 'badge bg-success'          :
+                                      (${log.newStatus == 'NO_SHOW'}     ? 'badge bg-danger'           :
+                                      (${log.newStatus == 'CANCELLED'}   ? 'badge bg-warning text-dark':
+                                      (${log.newStatus == 'COMPLETED'}   ? 'badge bg-info text-dark'   :
+                                      (${log.newStatus == 'RISK_SCORED'} ? 'badge bg-secondary'        :
+                                       'badge bg-secondary')))))">
+                </span>
+            </td>
+            <td th:text="${log.changedBy}"></td>
+            <td th:text="${#temporals.format(log.changedAt, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td th:text="${log.remarks != null} ? ${log.remarks} : '—'"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(logs)}">
+            <td colspan="8" class="text-center text-muted">No audit entries found.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Doctor Dashboard')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-1">Today's Schedule</h3>
+    <p class="text-muted" th:text="${doctor.name + ' — ' + doctor.specialization}"></p>
+
+    <table class="table table-bordered table-sm bg-white">
+        <thead class="table-light">
+        <tr>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Status</th>
+            <th>Risk</th>
+            <th>Notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="appt : ${todaySchedule}">
+            <td th:text="${appt.scheduledTime}"></td>
+            <td th:text="${appt.patient.name}"></td>
+            <td th:text="${appt.status}"></td>
+            <td>
+                <span th:if="${riskByAppointmentId.containsKey(appt.id)}"
+                      th:text="${riskByAppointmentId.get(appt.id).riskLevel}"
+                      th:classappend="${riskByAppointmentId.get(appt.id).riskLevel.name() == 'HIGH'} ? 'badge bg-danger'
+                                     : (${riskByAppointmentId.get(appt.id).riskLevel.name() == 'MEDIUM'} ? 'badge bg-warning text-dark' : 'badge bg-success')">
+                </span>
+                <span th:unless="${riskByAppointmentId.containsKey(appt.id)}" class="text-muted small">Not scored</span>
+            </td>
+            <td th:text="${appt.notes}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(todaySchedule)}">
+            <td colspan="5" class="text-center text-muted">No appointments scheduled for today.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Receptionist Dashboard')}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="container pb-4">
+    <h3 class="mb-4">Receptionist Dashboard</h3>
+
+    <div th:if="${not #lists.isEmpty(highRiskToday)}" class="alert alert-danger">
+        <strong>HIGH RISK ALERT:</strong>
+        <span th:text="${#lists.size(highRiskToday)}">0</span>
+        HIGH-risk appointment(s) today — consider calling patients to confirm.
+    </div>
+
+    <div class="mb-3">
+        <a href="/receptionist/appointments/new" class="btn btn-primary me-2">Book Appointment</a>
+        <a href="/receptionist/appointments" class="btn btn-outline-secondary">View All Appointments</a>
+    </div>
+
+    <h5>Today's Appointments</h5>
+    <table class="table table-bordered table-sm bg-white">
+        <thead class="table-light">
+        <tr>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="appt : ${todayAppointments}">
+            <td th:text="${appt.scheduledTime}"></td>
+            <td th:text="${appt.patient.name}"></td>
+            <td th:text="${appt.doctor.name}"></td>
+            <td th:text="${appt.status}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(todayAppointments)}">
+            <td colspan="4" class="text-center text-muted">No appointments scheduled for today.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

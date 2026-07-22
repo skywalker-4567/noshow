@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            🏥 No-Show Risk Engine
+        </a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+
+                <!-- ADMIN links -->
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item">
+                    <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item">
+                    <a class="nav-link" href="/admin/appointments">Appointments</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item">
+                    <a class="nav-link" href="/admin/patients">Patients</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item">
+                    <a class="nav-link" href="/admin/audit-log">Audit Log</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')" class="nav-item">
+                    <a class="nav-link" href="/admin/risk-report">Risk Report</a>
+                </li>
+
+                <!-- RECEPTIONIST links -->
+                <li sec:authorize="hasRole('RECEPTIONIST')" class="nav-item">
+                    <a class="nav-link" href="/receptionist/dashboard">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('RECEPTIONIST')" class="nav-item">
+                    <a class="nav-link" href="/receptionist/appointments">Appointments</a>
+                </li>
+                <li sec:authorize="hasRole('RECEPTIONIST')" class="nav-item">
+                    <a class="nav-link" href="/receptionist/appointments/new">Book Appointment</a>
+                </li>
+
+                <!-- DOCTOR links -->
+                <li sec:authorize="hasRole('DOCTOR')" class="nav-item">
+                    <a class="nav-link" href="/doctor/dashboard">My Schedule</a>
+                </li>
+
+            </ul>
+
+            <!-- Logged-in user + logout -->
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <span class="navbar-text text-light me-3"
+                          sec:authentication="name">username</span>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
